@@ -71,6 +71,12 @@ class VisaSubStatus(models.Model):
         verbose_name_plural = "Sub Statuses"
 
 
+class course_levels(models.Model):
+    level_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.level_name
+
 class country(models.Model):
     country_name = models.CharField(max_length=100 , unique=True , verbose_name="Country Name")
     currency = models.CharField(max_length=50 , verbose_name="Currency")
@@ -78,6 +84,7 @@ class country(models.Model):
     admission_process_attachment = models.FileField(upload_to='admission_process/' ,
                                                     verbose_name="Admission Process Attachment" , blank=True ,
                                                     null=True)
+    level = models.ManyToManyField(course_levels , blank=True , null=True)
     visa_process_notes = models.TextField(verbose_name="Visa Process Notes" , blank=True , null=True)
     visa_process_attachment = models.FileField(upload_to='visa_process/' , verbose_name="Visa Process Attachment" ,
                                                blank=True , null=True)
@@ -88,6 +95,8 @@ class country(models.Model):
     admission_status = models.ManyToManyField(AdmissionStatus , related_name='countries' ,
                                               verbose_name="Admission Status")
     visa_status = models.ManyToManyField(VisaStatus , related_name='countries' , verbose_name="Visa Status")
+    assigned_users = models.ForeignKey(get_user_model() , on_delete=models.CASCADE , default="" , blank=True ,
+                                       null=True)
 
     def __str__(self):
         return self.country_name
@@ -96,12 +105,6 @@ class country(models.Model):
         verbose_name = "Country"
         verbose_name_plural = "Countries"
 
-
-class course_levels(models.Model):
-    level_name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.level_name
 
 
 class Available_Services(models.Model):
@@ -126,10 +129,6 @@ class intake(models.Model):
 
     def __str__(self):
         return self.intake_Name
-
-
-
-
 
 class documents_required(models.Model):
     docu_name = models.CharField(max_length=100)
@@ -261,6 +260,12 @@ class twelfth_std_percentage_requirement(models.Model):
 
     def __str__(self):
         return f"Required: {self.percentage}"
+    
+class DiplomaRequirement(models.Model):
+    requirement = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"Required: {self.requirement}"
 
 
 class bachelor_requirement(models.Model):
@@ -285,7 +290,7 @@ class Rejection_Reason(models.Model):
     Refusal_Letter = models.FileField(upload_to='refusal_letter/' , blank=True)
 
     def __str__(self):
-        return self.Reason
+        return self.Refusal_Reason
 
 
 class Detail_Enquiry_Status(models.Model):
@@ -344,6 +349,8 @@ class university(models.Model):
                                                          on_delete=models.CASCADE , blank=True , null=True)
     twelfth_std_percentage_requirement = models.ForeignKey("Master.twelfth_std_percentage_requirement" ,
                                                            on_delete=models.CASCADE , blank=True , null=True)
+    diploma_requirement = models.ForeignKey("Master.DiplomaRequirement" , on_delete=models.CASCADE , blank=True ,
+                                             null=True)
     bachelor_requirement = models.ForeignKey("Master.bachelor_requirement" , on_delete=models.CASCADE , blank=True ,
                                              null=True)
     masters_requirement = models.ForeignKey("Master.masters_requirement" , on_delete=models.CASCADE , blank=True ,
@@ -362,86 +369,7 @@ class university(models.Model):
 
     def __str__(self):
         return self.univ_name
-# from import_export import resources, fields
-# from import_export.widgets import ForeignKeyWidget
-# from .models import (
-#     university, country, tenth_std_percentage_requirement, twelfth_std_percentage_requirement,
-#     bachelor_requirement, masters_requirement, Toefl_Exam, ielts_Exam, PTE_Exam, Duolingo_Exam,
-#     Gre_Exam, Gmat_Exam, course_levels
-# )
 
-# class UniversityResource(resources.ModelResource):
-#     country_name = fields.Field(
-#         column_name='Country',
-#         attribute='country',
-#         widget=ForeignKeyWidget(country, 'country_name')
-#     )
-#     tenth_requirement = fields.Field(
-#         column_name='10th Requirement',
-#         attribute='tenth_std_percentage_requirement',
-#         widget=ForeignKeyWidget(tenth_std_percentage_requirement, 'percentage')
-#     )
-#     twelfth_requirement = fields.Field(
-#         column_name='12th Requirement',
-#         attribute='twelfth_std_percentage_requirement',
-#         widget=ForeignKeyWidget(twelfth_std_percentage_requirement, 'percentage')
-#     )
-#     bachelor_requirement_name = fields.Field(
-#         column_name='Bachelor Requirement',
-#         attribute='bachelor_requirement',
-#         widget=ForeignKeyWidget(bachelor_requirement, 'requirement')
-#     )
-#     masters_requirement_name = fields.Field(
-#         column_name='Masters Requirement',
-#         attribute='masters_requirement',
-#         widget=ForeignKeyWidget(masters_requirement, 'requirement')
-#     )
-#     toefl_overall = fields.Field(
-#         column_name='TOEFL Overall',
-#         attribute='Toefl_Exam',
-#         widget=ForeignKeyWidget(Toefl_Exam, 'overall')
-#     )
-#     ielts_overall = fields.Field(
-#         column_name='IELTS Overall',
-#         attribute='ielts_Exam',
-#         widget=ForeignKeyWidget(ielts_Exam, 'overall')
-#     )
-#     pte_overall = fields.Field(
-#         column_name='PTE Overall',
-#         attribute='PTE_Exam',
-#         widget=ForeignKeyWidget(PTE_Exam, 'overall')
-#     )
-#     duolingo_overall = fields.Field(
-#         column_name='Duolingo Overall',
-#         attribute='Duolingo_Exam',
-#         widget=ForeignKeyWidget(Duolingo_Exam, 'overall')
-#     )
-#     gre_overall = fields.Field(
-#         column_name='GRE Overall',
-#         attribute='Gre_Exam',
-#         widget=ForeignKeyWidget(Gre_Exam, 'overall')
-#     )
-#     gmat_overall = fields.Field(
-#         column_name='GMAT Overall',
-#         attribute='Gmat_Exam',
-#         widget=ForeignKeyWidget(Gmat_Exam, 'overall')
-#     )
-#     course_levels_name = fields.Field(
-#         column_name='Course Levels',
-#         attribute='levels',
-#         widget=ForeignKeyWidget(course_levels, 'level_name')
-#     )
-
-#     class Meta:
-#         model = university
-#         fields = (
-#             'id', 'univ_name', 'country_name', 'tenth_requirement', 'twelfth_requirement',
-#             'bachelor_requirement_name', 'masters_requirement_name', 'toefl_overall',
-#             'ielts_overall', 'pte_overall', 'duolingo_overall', 'gre_overall', 'gmat_overall',
-#             'univ_desc', 'deadline', 'moi_accepted', 'Application_fee', 'Admission_Requirements',
-#             'Backlogs_allowed', 'univ_phone', 'univ_email', 'univ_website', 'Remark', 'Active'
-#         )
-#         export_order = fields
 
 
 
@@ -494,7 +422,7 @@ class Course(models.Model):
     Gre_Exam = models.ForeignKey("Master.Gre_Exam" , on_delete=models.CASCADE , blank=True , null=True)
     Gmat_Exam = models.ForeignKey("Master.Gmat_Exam" , on_delete=models.CASCADE , blank=True , null=True)
     other_exam = models.CharField(max_length=100 , blank=True , null=True)
-    Application_deadline = models.DateField(blank=True , null=True)
+    Application_deadline = models.CharField(max_length=100 , blank=True , null=True)
     Application_fee = models.FloatField(blank=True , null=True)
     Application_fee_currency = models.CharField(max_length=10 , blank=True , null=True)
     Yearly_Tuition_fee = models.FloatField(blank=True , null=True)
@@ -514,4 +442,3 @@ class Course(models.Model):
         
 
 
-# add a field to class Rejection_Reason which is a file field to upload the refusal letter

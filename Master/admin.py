@@ -5,14 +5,14 @@ from Master.models import twelfth_std_percentage_requirement , bachelor_requirem
     Payment_Status , Payment_Mode
 from django.contrib import admin
 from import_export.admin import ImportExportMixin
-
+from django.contrib.auth import get_user_model
 # Register your models here.
 from .models import country , course_levels , intake , current_education , documents_required , \
     enquiry_status , application_status , Course , university , assessment_status , Edu_Level , Work_Experience , \
     Rejection_Reason , AdmissionStatus , SubStatus , VisaStatus , VisaSubStatus, campus
 from .resources import CourseResource , UniversityResource
 from django.contrib import admin
-from .models import university, tenth_std_percentage_requirement, twelfth_std_percentage_requirement, bachelor_requirement, masters_requirement, Toefl_Exam, ielts_Exam, PTE_Exam, Duolingo_Exam, Gre_Exam, Gmat_Exam
+from .models import university, tenth_std_percentage_requirement, twelfth_std_percentage_requirement, bachelor_requirement, masters_requirement, Toefl_Exam, ielts_Exam, PTE_Exam, Duolingo_Exam, Gre_Exam, Gmat_Exam, DiplomaRequirement
 from .resources import UniversityResource
 from django.contrib import admin
 import csv
@@ -321,7 +321,7 @@ class UniversityAdmin(ImportExportMixin, admin.ModelAdmin):
         }),
         ('Requirements', {
             'fields': (
-                'tenth_std_percentage_requirement', 'twelfth_std_percentage_requirement', 
+                'tenth_std_percentage_requirement', 'twelfth_std_percentage_requirement', 'diploma_requirement',
                 'bachelor_requirement', 'masters_requirement', 'Toefl_Exam', 'ielts_Exam', 
                 'PTE_Exam', 'Duolingo_Exam', 'Gre_Exam', 'Gmat_Exam'
             )
@@ -359,30 +359,101 @@ class VisaStatusAdmin(admin.ModelAdmin):
     inlines = [VisaSubStatusInline]
     list_display = ('status_name' ,)
 
-
-class CountryAdmin(admin.ModelAdmin):
-    fieldsets = (
-        (None , {
-            'fields': ('country_name' , 'currency')
-        }) ,
-        ('Admission Process' , {
-            'fields': ('admission_process_notes' , 'admission_process_attachment')
-        }) ,
-        ('Visa Process' , {
-            'fields': ('visa_process_notes' , 'visa_process_attachment')
-        }) ,
-        ('Attachments' , {
-            'fields': ('news_letter' , 'video_attachment' , 'country_brochure')
-        }) ,
-        ('Statuses' , {
-            'fields': ('admission_status' , 'visa_status')
-        }) ,
+class CountryResource(resources.ModelResource):
+    country_name = fields.Field(
+        column_name='country_name',
+        attribute='country_name'
+    )
+    currency = fields.Field(
+        column_name='currency',
+        attribute='currency'
+    )
+    admission_process_notes = fields.Field(
+        column_name='admission_process_notes',
+        attribute='admission_process_notes'
+    )
+    admission_process_attachment = fields.Field(
+        column_name='admission_process_attachment',
+        attribute='admission_process_attachment'
+    )
+    level = fields.Field(
+        column_name='level',
+        attribute='level',
+        widget=ManyToManyWidget(course_levels, separator=',', field='levels')
+    )
+    visa_process_notes = fields.Field(
+        column_name='visa_process_notes',
+        attribute='visa_process_notes'
+    )
+    visa_process_attachment = fields.Field(
+        column_name='visa_process_attachment',
+        attribute='visa_process_attachment'
+    )
+    news_letter = fields.Field(
+        column_name='news_letter',
+        attribute='news_letter'
+    )
+    video_attachment = fields.Field(
+        column_name='video_attachment',
+        attribute='video_attachment'
+    )
+    country_brochure = fields.Field(
+        column_name='country_brochure',
+        attribute='country_brochure'
+    )
+    admission_status = fields.Field(
+        column_name='admission_status',
+        attribute='admission_status',
+        widget=ManyToManyWidget(AdmissionStatus, separator=',', field='status_name')
+    )
+    visa_status = fields.Field(
+        column_name='visa_status',
+        attribute='visa_status',
+        widget=ManyToManyWidget(VisaStatus, separator=',', field='status_name')
+    )
+    assigned_users = fields.Field(
+        column_name='assigned_users',
+        attribute='assigned_users',
+        widget=ForeignKeyWidget(get_user_model(), 'username')
     )
 
-    list_display = ('country_name' , 'currency')
-    search_fields = ('country_name' , 'currency')
-    list_filter = ('admission_status' , 'visa_status')
-    filter_horizontal = ('admission_status' , 'visa_status')
+    class Meta:
+        model = country
+        fields = (
+            'id', 'country_name', 'currency', 'admission_process_notes', 'admission_process_attachment', 
+            'level', 'visa_process_notes', 'visa_process_attachment', 'news_letter', 'video_attachment', 
+            'country_brochure', 'admission_status', 'visa_status', 'assigned_users'
+        )
+        export_order = fields
+
+
+
+class CountryAdmin(ImportExportMixin, admin.ModelAdmin):
+    resource_class = CountryResource
+    fieldsets = (
+        (None, {
+            'fields': ('country_name', 'currency', 'level', 'assigned_users')
+        }),
+        ('Admission Process', {
+            'fields': ('admission_process_notes', 'admission_process_attachment')
+        }),
+        ('Visa Process', {
+            'fields': ('visa_process_notes', 'visa_process_attachment')
+        }),
+        ('Attachments', {
+            'fields': ('news_letter', 'video_attachment', 'country_brochure')
+        }),
+        ('Statuses', {
+            'fields': ('admission_status', 'visa_status')
+        }),
+    )
+
+    list_display = ('country_name', 'currency')
+    search_fields = ('country_name', 'currency')
+    list_filter = ('admission_status', 'visa_status')
+    filter_horizontal = ('admission_status', 'visa_status')
+
+admin.site.register(country, CountryAdmin)
 
 
 admin.site.register(course_levels)
@@ -405,6 +476,7 @@ admin.site.register(Gmat_Exam)
 admin.site.register(Rejection_Reason)
 admin.site.register(tenth_std_percentage_requirement)
 admin.site.register(twelfth_std_percentage_requirement)
+admin.site.register(DiplomaRequirement)
 admin.site.register(bachelor_requirement)
 admin.site.register(masters_requirement)
 admin.site.register(Available_Services)
@@ -416,8 +488,6 @@ admin.site.register(Payment_Mode)
 admin.site.register(AdmissionStatus , AdmissionStatusAdmin)
 admin.site.register(SubStatus)
 admin.site.register(VisaStatus , VisaStatusAdmin)
-admin.site.register(VisaSubStatus)
-admin.site.register(country , CountryAdmin)
 admin.site.register(campus)
 
 # Register your models here.
