@@ -20,7 +20,7 @@ class Application(models.Model):
     master_marksheet = models.FileField(upload_to='master_marksheet' , blank=True , null=True)
     other_documents = models.FileField(upload_to='other_documents' , blank=True , null=True)
     application_status = models.ForeignKey(application_status , max_length=100 , blank=True , on_delete=models.CASCADE ,
-                                           null=True, verbose_name = "application_status_name" )
+                                           null=True, verbose_name = "application status names" )
 
     def __str__(self):
         return (f"{self.application}")
