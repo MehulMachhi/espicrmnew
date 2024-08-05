@@ -1,0 +1,25 @@
+name: Deploy Private GitHub repository to cPanel
+
+on:
+  workflow_run:
+    workflows: ["Django CI"]
+    types:
+      - completed
+
+jobs:
+  FTP-Deploy-Action:
+    name: FTP-Deploy-Action
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2.1.0
+        with:
+          fetch-depth: 2
+
+      - name: FTP Deploy Action
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
