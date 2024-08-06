@@ -84,12 +84,12 @@ class CourseResource(resources.ModelResource):
     tenth_std_percentage_requirement = fields.Field(
         column_name='tenth_std_percentage_requirement',
         attribute='tenth_std_percentage_requirement',
-        widget=ForeignKeyWidget(tenth_std_percentage_requirement, 'requirement')
+        widget=ForeignKeyWidget(tenth_std_percentage_requirement, 'percentage')
     )
     twelfth_std_percentage_requirement = fields.Field(
         column_name='twelfth_std_percentage_requirement',
         attribute='twelfth_std_percentage_requirement',
-        widget=ForeignKeyWidget(twelfth_std_percentage_requirement, 'requirement')
+        widget=ForeignKeyWidget(twelfth_std_percentage_requirement, 'percentage')
     )
     bachelor_requirement = fields.Field(
         column_name='bachelor_requirement',
@@ -124,12 +124,12 @@ class CourseResource(resources.ModelResource):
     Gre_Exam = fields.Field(
         column_name='Gre_Exam',
         attribute='Gre_Exam',
-        widget=ForeignKeyWidget(Gre_Exam, 'Overall')
+        widget=ForeignKeyWidget(Gre_Exam, 'overall')
     )
     Gmat_Exam = fields.Field(
         column_name='Gmat_Exam',
         attribute='Gmat_Exam',
-        widget=ForeignKeyWidget(Gmat_Exam, 'Overall')
+        widget=ForeignKeyWidget(Gmat_Exam, 'overall')
     )
     Univ_Campus = fields.Field(
         column_name='Univ_Campus',
@@ -140,11 +140,13 @@ class CourseResource(resources.ModelResource):
     class Meta:
         model = Course
         fields = (
-            'id', 'course_name', 'country', 'university', 'course_levels', 'intake', 'website_url', 'specialisation_tag',
-            'documents_required', 'tenth_std_percentage_requirement', 'twelfth_std_percentage_requirement', 'bachelor_requirement',
-            'masters_requirement', 'Toefl_Exam', 'ielts_Exam', 'PTE_Exam', 'Duolingo_Exam', 'Gre_Exam', 'Gmat_Exam', 
-            'other_exam', 'Application_deadline', 'Application_fee', 'Application_fee_currency', 'Yearly_Tuition_fee', 
-            'Backlogs_allowed', 'Remark', 'Active', 'Univ_Campus'
+            'id', 'country', 'university', 'course_levels', 'course_name', 'specialisation_tag', 'website_url', 'Univ_Campus','intake', 
+            'documents_required', 'ielts_Exam', 'Toefl_Exam', 'PTE_Exam', 'Gre_Exam','Gmat_Exam', 'other_exam', 'Application_deadline', 
+            'Application_fee', 'Yearly_Tuition_fee', 'Backlogs_allowed', 'Remark', 'tenth_std_percentage_requirement',
+            'twelfth_std_percentage_requirement', 'bachelor_requirement',
+            'masters_requirement',  'Duolingo_Exam',  
+             'Application_fee_currency', 
+             'Active', 
         )
         export_order = fields
 
