@@ -403,8 +403,11 @@ class Course(models.Model):
 
     course_name = models.CharField(max_length=100 , blank=True , null=True)
     course_levels = models.ForeignKey(course_levels , on_delete=models.CASCADE , blank=True , null=True)
-    intake = models.ManyToManyField(intake , blank=True , null=True)
-    website_url = models.URLField(blank=True , null=True)
+    course_duration = models.CharField(max_length=100 , blank=True , null=True)
+    course_fee = models.CharField(max_length=10, blank=True , null=True)
+    course_fee_currency = models.CharField(max_length=10 , blank=True , null=True)
+    course_link = models.URLField(blank=True , null=True)
+    intake = models.ManyToManyField(intake , blank=True , null=True)    
     specialisation_tag = TagField(blank=True , null=True)
     documents_required = models.ManyToManyField(documents_required , blank=True , null=True)
     tenth_std_percentage_requirement = models.ForeignKey("Master.tenth_std_percentage_requirement" ,

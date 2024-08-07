@@ -140,7 +140,7 @@ class CourseResource(resources.ModelResource):
     class Meta:
         model = Course
         fields = (
-            'id', 'country', 'university', 'course_levels', 'course_name', 'specialisation_tag', 'website_url', 'Univ_Campus','intake', 
+            'id', 'country', 'university', 'course_levels', 'course_name', 'course_duration', 'course_fee', 'course_fee_currency', 'course_link','specialisation_tag','Univ_Campus','intake', 
             'documents_required', 'ielts_Exam', 'Toefl_Exam', 'PTE_Exam', 'Gre_Exam','Gmat_Exam', 'other_exam', 'Application_deadline', 
             'Application_fee', 'Yearly_Tuition_fee', 'Backlogs_allowed', 'Remark', 'tenth_std_percentage_requirement',
             'twelfth_std_percentage_requirement', 'bachelor_requirement',
@@ -158,7 +158,7 @@ class CourseAdmin(ImportExportMixin, admin.ModelAdmin):
     search_fields = ('course_name', 'university__univ_name', 'country__country_name')
     fieldsets = (
         ('Basic Information', {
-            'fields': ('course_name', 'country', 'university', 'course_levels', 'website_url', 'specialisation_tag')
+            'fields': ('course_name', 'country', 'university', 'course_levels',  'course_duration', 'course_fee', 'course_fee_currency', 'course_link','specialisation_tag')
         }),
         ('Requirements', {
             'fields': (
